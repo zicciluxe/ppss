@@ -1,1255 +1,793 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HND Computer Science Study Hub</title>
-  <style>
-    :root{
-      --bg:#070b18; --panel:#111833; --panel2:#161f40; --card:#1a2550; --text:#eef2ff;
-      --muted:#aeb8e6; --brand:#7a8cff; --brand2:#56d6c8; --danger:#ff6e8f; --ok:#45d483;
-      --border:rgba(255,255,255,.09); --shadow:0 20px 60px rgba(0,0,0,.35); --radius:20px;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
-      radial-gradient(1000px 700px at top left, #17224f 0%, var(--bg) 55%);color:var(--text)}
-    button,input,select,textarea{font:inherit}
-    button,input,select,textarea{border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.04);color:var(--text);outline:none}
-    button{cursor:pointer;padding:11px 14px;transition:.15s transform,.15s background,.15s opacity;font-weight:600}
-    button:hover{transform:translateY(-1px);background:rgba(255,255,255,.08)}
-    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-    input,select,textarea{padding:11px 12px}
-    textarea{min-height:110px;resize:vertical}
-    a{color:inherit}
-    .hidden{display:none!important}
-    .wrap{max-width:1500px;margin:0 auto;padding:20px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
-    .brand{display:flex;align-items:center;gap:14px}
-    .logo{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;font-size:22px;font-weight:900;
-      background:linear-gradient(145deg,var(--brand),var(--brand2));box-shadow:var(--shadow)}
-    .brand h1{margin:0;font-size:22px}
-    .brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
-    .statusbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .pill{padding:10px 14px;border-radius:999px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.04);font-size:13px}
-    .layout{display:grid;grid-template-columns:290px 1fr;gap:18px}
-    .sidebar,.panel,.authCard{background:rgba(14,19,44,.84);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--radius);backdrop-filter:blur(12px)}
-    .sidebar{padding:14px;height:fit-content;position:sticky;top:18px}
-    .nav{display:grid;gap:10px}
-    .nav button{text-align:left;width:100%}
-    .nav button.active{background:rgba(122,140,255,.22);border-color:rgba(122,140,255,.55)}
-    .stats{margin-top:14px;display:grid;gap:10px}
-    .stat{padding:12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
-    .stat .k{color:var(--muted);font-size:12px}.stat .v{font-size:21px;font-weight:900;margin-top:4px}
-    .content{display:grid;gap:18px}
-    .panel{padding:18px}
-    .sectionHead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-    .sectionHead h2{margin:0;font-size:20px}.sectionHead p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
-    .controls,.row,.split{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .controls>*,.row>*,.split>*{flex:1 1 170px}
-    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-    .card{padding:14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
-    .meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-    .tag,.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:12px}
-    .tag{background:rgba(122,140,255,.16);border:1px solid rgba(122,140,255,.35)}
-    .tag.green{background:rgba(69,212,131,.14);border:1px solid rgba(69,212,131,.35)}
-    .badge{border:1px solid var(--border);color:var(--muted)}
-    .question{white-space:pre-wrap;line-height:1.6;color:#f7f9ff;margin-bottom:10px}
-    .small{font-size:12px;color:var(--muted)}
-    .summary{padding:14px;border-radius:16px;background:rgba(122,140,255,.11);border:1px solid rgba(122,140,255,.25);line-height:1.65}
-    .tip{padding:12px 14px;border-left:4px solid var(--brand2);border-radius:12px;background:rgba(86,214,200,.08);color:#dffcf8;line-height:1.6;font-size:13px}
-    .chatLog{height:360px;overflow:auto;padding:12px;border-radius:18px;background:rgba(0,0,0,.16);border:1px solid var(--border)}
-    .bubble{max-width:92%;padding:10px 12px;margin:0 0 10px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--border)}
-    .bubble.me{margin-left:auto;background:rgba(122,140,255,.18);border-color:rgba(122,140,255,.35)}
-    .bubble .head{font-size:12px;color:var(--muted);margin-bottom:6px}
-    .bubble .body{white-space:pre-wrap;line-height:1.55}
-    .roomTabs{display:flex;gap:8px;flex-wrap:wrap}
-    .roomTabs button.active{background:rgba(86,214,200,.2);border-color:rgba(86,214,200,.5)}
-    .list{display:grid;gap:10px}
-    .resource{padding:12px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
-    .resource .url{font-size:12px;color:var(--muted);word-break:break-all;margin-top:4px}
-    .resource .text{margin-top:8px;font-size:13px;line-height:1.6;color:#dde3ff;white-space:pre-wrap}
-    .authWrap{min-height:100vh;display:grid;place-items:center;padding:20px}
-    .authCard{width:min(1080px,100%);padding:22px;display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
-    .authCard h2{margin:0 0 10px;font-size:30px}
-    .authCard p{color:var(--muted);line-height:1.7}
-    .formBox{padding:16px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid var(--border);margin-bottom:12px}
-    .formBox h3{margin:0 0 10px}
-    .footerNote{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.6}
-    .modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}
-    .modal{width:min(840px,100%);background:#101634;border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:18px}
-    .modal h3{margin:0 0 10px}
-    .keyRow{display:grid;grid-template-columns:1fr auto;gap:10px}
-    .toast{position:fixed;right:16px;bottom:16px;padding:12px 14px;background:#121a3e;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);max-width:360px;display:none;z-index:60}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-    .divider{height:1px;background:var(--border);margin:14px 0}
-    @media (max-width:1050px){.layout,.authCard{grid-template-columns:1fr}.sidebar{position:static}.cards{grid-template-columns:1fr}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HND Computer Science Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom Scrollbar for chat and content areas */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 600; color: #1e293b; }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #4f46e5;
+            width: 24px;
+            height: 24px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
-  <div id="authScreen" class="authWrap">
-    <div class="authCard">
-      <div>
-        <div class="brand" style="margin-bottom:16px;">
-          <div class="logo">H</div>
-          <div>
-            <h1>HND Computer Science Study Hub</h1>
-            <p>Past questions • AI tutor • live chat • Firebase auth</p>
-          </div>
-        </div>
-        <h2>One study space for the full HND Computer Science course list.</h2>
-        <p>
-          Browse the archive by year and course, ask the built-in AI tutor to summarize a section, and join live revision rooms for
-          2, 4, 8, or 20 people. This version is built for GitHub Pages and connects to Firebase for authentication and real-time chat.
-        </p>
-        <div class="tip">
-          The archive below is a starter study archive generated for 2020–2026 and the eight HND Computer Science courses.
-          Replace or extend it with your real past questions as you collect them.
-        </div>
-      </div>
-      <div>
-        <div class="formBox">
-          <h3>Sign in</h3>
-          <div class="split">
-            <input id="loginEmail" type="email" placeholder="Email address" autocomplete="email" />
-            <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" />
-          </div>
-          <div style="margin-top:10px;">
-            <button class="primary" id="loginBtn">Login</button>
-          </div>
-        </div>
-        <div class="formBox">
-          <h3>Create account</h3>
-          <div class="split">
-            <input id="signupName" placeholder="Display name" autocomplete="nickname" />
-            <input id="signupEmail" type="email" placeholder="Email address" autocomplete="email" />
-          </div>
-          <div class="split" style="margin-top:10px;">
-            <input id="signupPassword" type="password" placeholder="Password" autocomplete="new-password" />
-            <button class="success" id="signupBtn">Register</button>
-          </div>
-        </div>
-        <div class="formBox">
-          <h3>AI key</h3>
-          <div class="keyRow">
-            <input id="geminiKeyInput" type="password" placeholder="Paste Gemini API key here for this browser" />
-            <button id="saveGeminiKeyBtn">Save</button>
-          </div>
-          <div class="footerNote">
-            For GitHub Pages, the safest way is to keep the key restricted or send requests through a backend. This demo stores it locally in your browser.
-          </div>
-        </div>
-        <div class="footerNote">
-          Firebase config can be public in the page. Keep Firestore rules secure before going live.
-        </div>
-      </div>
-    </div>
-  </div>
+<body class="bg-slate-50 text-slate-800 h-screen overflow-hidden flex font-sans selection:bg-indigo-100 selection:text-indigo-900">
 
-  <div id="appScreen" class="wrap hidden">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo">H</div>
-        <div>
-          <h1>HND Computer Science Study Hub</h1>
-          <p>Past questions • AI tutor • live chat rooms • Firebase sync</p>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center transition-opacity duration-500">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 mb-4">
+                    <i class="fas fa-graduation-cap text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-800">HND CS Portal</h1>
+                <p class="text-slate-500 mt-2">Enter your details to access past questions and AI tools.</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                    <input type="text" id="login-name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="e.g. John Doe">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Student ID</label>
+                    <input type="text" id="login-id" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="e.g. CS2024001">
+                </div>
+                <button type="submit" id="login-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <span>Authenticate & Enter</span>
+                    <i class="fas fa-arrow-right text-sm"></i>
+                </button>
+            </form>
         </div>
-      </div>
-      <div class="statusbar">
-        <span class="pill" id="userPill">Signed in as —</span>
-        <button id="settingsBtn">AI settings</button>
-        <button id="logoutBtn">Logout</button>
-      </div>
     </div>
 
-    <div class="layout">
-      <aside class="sidebar">
-        <div class="nav">
-          <button class="active" data-tab="archive">Past Questions</button>
-          <button data-tab="assistant">AI Tutor</button>
-          <button data-tab="chat">Live Chat</button>
-          <button data-tab="resources">Resources</button>
-          <button data-tab="add">Add Content</button>
-          <button data-tab="account">Account</button>
-        </div>
-        <div class="stats">
-          <div class="stat"><div class="k">Courses</div><div class="v">8</div></div>
-          <div class="stat"><div class="k">Years</div><div class="v">2020–2026</div></div>
-          <div class="stat"><div class="k">Chat sizes</div><div class="v">2 / 4 / 8 / 20</div></div>
-        </div>
-      </aside>
-
-      <main class="content">
-        <section id="tab-archive" class="panel">
-          <div class="sectionHead">
+    <!-- MAIN APP (Hidden initially) -->
+    <div id="main-app" class="flex w-full h-full hidden opacity-0 transition-opacity duration-500">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-20 lg:w-64 bg-white border-r border-slate-200 flex flex-col justify-between flex-shrink-0 transition-all duration-300">
             <div>
-              <h2>Past Question Archive</h2>
-              <p>Filter by year, course, or keyword. The displayed archive can also sync to Firestore if you choose to save it there.</p>
+                <div class="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-slate-100">
+                    <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+                    <span class="ml-3 font-bold text-lg hidden lg:block text-slate-800">CS Portal</span>
+                </div>
+                <nav class="p-4 space-y-2 mt-4">
+                    <button onclick="navigate('dashboard')" class="nav-btn active w-full flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" data-target="dashboard">
+                        <i class="fas fa-home text-lg w-6 text-center"></i>
+                        <span class="ml-3 font-medium hidden lg:block">Dashboard</span>
+                    </button>
+                    <button onclick="navigate('past-questions')" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" data-target="past-questions">
+                        <i class="fas fa-book-open text-lg w-6 text-center"></i>
+                        <span class="ml-3 font-medium hidden lg:block">Past Questions</span>
+                    </button>
+                    <button onclick="navigate('ai-tutor')" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" data-target="ai-tutor">
+                        <i class="fas fa-robot text-lg w-6 text-center"></i>
+                        <span class="ml-3 font-medium hidden lg:block">AI Tutor</span>
+                    </button>
+                    <button onclick="navigate('live-chat')" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" data-target="live-chat">
+                        <i class="fas fa-users text-lg w-6 text-center"></i>
+                        <span class="ml-3 font-medium hidden lg:block">Study Rooms</span>
+                    </button>
+                </nav>
             </div>
-            <div class="controls">
-              <select id="yearFilter"></select>
-              <select id="courseFilter"></select>
-              <input id="searchFilter" placeholder="Search questions..." />
-              <button id="clearFiltersBtn">Clear</button>
+            <div class="p-4 border-t border-slate-100">
+                <div class="flex items-center justify-center lg:justify-start">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold" id="user-avatar">
+                        U
+                    </div>
+                    <div class="ml-3 hidden lg:block overflow-hidden">
+                        <p class="text-sm font-medium text-slate-800 truncate" id="user-name-display">Student</p>
+                        <p class="text-xs text-slate-500 truncate" id="user-id-display">ID</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="mt-4 w-full flex items-center justify-center lg:justify-start p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                    <i class="fas fa-sign-out-alt text-lg w-6 text-center"></i>
+                    <span class="ml-2 font-medium hidden lg:block">Logout</span>
+                </button>
             </div>
-          </div>
-          <div id="archiveSummary" class="summary"></div>
-          <div style="height:14px"></div>
-          <div id="questionCards" class="cards"></div>
-        </section>
+        </aside>
 
-        <section id="tab-assistant" class="panel hidden">
-          <div class="sectionHead">
-            <div>
-              <h2>AI Tutor</h2>
-              <p>Summarize the current section or ask questions about the courses, the archive, or saved resources.</p>
-            </div>
-            <div class="toolbar">
-              <button class="primary" id="summarizeBtn">Summarize current view</button>
-              <button id="useContextBtn">Use archive context</button>
-            </div>
-          </div>
-          <div class="layout" style="grid-template-columns:1.15fr .85fr;gap:14px;">
-            <div class="card" style="display:grid;gap:12px;">
-              <div class="row">
-                <input id="assistantQuestion" placeholder="Ask the AI a question about what you studied..." />
-                <button class="success" id="askAiBtn">Ask</button>
-              </div>
-              <textarea id="assistantNotes" placeholder="Paste notes, lecture text, or website text here so the AI can summarize it."></textarea>
-              <div id="assistantAnswer" class="summary">The assistant is ready.</div>
-            </div>
-            <div class="card">
-              <h3 style="margin-top:0;">What the AI uses</h3>
-              <p class="small" style="line-height:1.75;">
-                The tutor reads the current filtered archive, saved resources, and any notes you paste. If a Gemini API key is set,
-                it can generate richer answers; otherwise it falls back to an offline study helper.
-              </p>
-              <div class="tip" style="margin-top:12px;">
-                Best use: select a course, summarize that view, then ask a question like “Explain the key ideas in structured programming.”
-              </div>
-            </div>
-          </div>
-        </section>
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col min-w-0 bg-slate-50">
+            <!-- HEADER -->
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center px-6 flex-shrink-0">
+                <h2 id="page-title" class="text-xl font-semibold text-slate-800">Dashboard</h2>
+                <div class="ml-auto flex items-center space-x-4">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span> Online
+                    </span>
+                </div>
+            </header>
 
-        <section id="tab-chat" class="panel hidden">
-          <div class="sectionHead">
-            <div>
-              <h2>Live Chat</h2>
-              <p>Join or create rooms. Capacity is controlled per room at 2, 4, 8, or 20 members.</p>
-            </div>
-          </div>
-          <div class="controls" style="margin-bottom:14px;">
-            <input id="roomName" placeholder="Room name" />
-            <input id="roomNick" placeholder="Nickname" />
-            <select id="roomSize">
-              <option value="2">2 people</option>
-              <option value="4">4 people</option>
-              <option value="8">8 people</option>
-              <option value="20">20 people</option>
-            </select>
-            <button class="primary" id="joinRoomBtn">Join room</button>
-            <button id="leaveRoomBtn">Leave room</button>
-          </div>
-          <div class="roomTabs" id="roomTabs"></div>
-          <div style="height:12px"></div>
-          <div class="card">
-            <div class="row">
-              <div><div class="small">Current room</div><div id="currentRoomLabel" style="font-weight:900;margin-top:4px;">No room joined</div></div>
-              <div><div class="small">Capacity</div><div id="currentRoomCapacity" style="font-weight:900;margin-top:4px;">—</div></div>
-              <div><div class="small">Members</div><div id="currentRoomMembers" style="font-weight:900;margin-top:4px;">—</div></div>
-            </div>
-          </div>
-          <div style="height:12px"></div>
-          <div id="chatLog" class="chatLog"></div>
-          <div style="height:12px"></div>
-          <div class="row">
-            <input id="chatInput" placeholder="Type a message..." />
-            <button class="success" id="sendChatBtn">Send</button>
-          </div>
-        </section>
+            <!-- VIEWS -->
+            <div class="flex-1 overflow-y-auto p-6 relative">
+                
+                <!-- DASHBOARD VIEW -->
+                <div id="view-dashboard" class="view-section block space-y-6 max-w-5xl mx-auto">
+                    <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-2xl p-8 text-white shadow-lg">
+                        <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="welcome-name">Student</span>!</h1>
+                        <p class="text-indigo-100 max-w-2xl">Access HND Computer Science past questions, get instant help from our AI tutor, or collaborate with course mates in live study rooms.</p>
+                    </div>
 
-        <section id="tab-resources" class="panel hidden">
-          <div class="sectionHead">
-            <div>
-              <h2>Resources</h2>
-              <p>Save notes, paste useful text, and optionally store links for later revision.</p>
-            </div>
-          </div>
-          <div class="layout" style="grid-template-columns:1fr .95fr;gap:14px;">
-            <div class="card">
-              <h3 style="margin-top:0;">Add resource</h3>
-              <div class="split">
-                <input id="resourceTitle" placeholder="Title" />
-                <input id="resourceUrl" placeholder="Optional URL" />
-              </div>
-              <div style="height:10px"></div>
-              <textarea id="resourceText" placeholder="Paste notes or text from a source here."></textarea>
-              <div style="height:10px"></div>
-              <button class="primary" id="saveResourceBtn">Save resource</button>
-            </div>
-            <div class="card">
-              <h3 style="margin-top:0;">Saved resources</h3>
-              <div id="resourceList" class="list"></div>
-            </div>
-          </div>
-        </section>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div onclick="navigate('past-questions')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md cursor-pointer transition-all hover:border-indigo-200 group">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-1">Past Questions</h3>
+                            <p class="text-sm text-slate-500">Browse questions from 2020-2026 across 8 core courses.</p>
+                        </div>
+                        <div onclick="navigate('ai-tutor')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md cursor-pointer transition-all hover:border-indigo-200 group">
+                            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-1">AI Tutor</h3>
+                            <p class="text-sm text-slate-500">Get summaries, ask questions, and pull data from the web instantly.</p>
+                        </div>
+                        <div onclick="navigate('live-chat')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md cursor-pointer transition-all hover:border-indigo-200 group">
+                            <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-1">Study Rooms</h3>
+                            <p class="text-sm text-slate-500">Join live chat rooms (2, 4, 8, or 20 people) for group discussions.</p>
+                        </div>
+                    </div>
+                </div>
 
-        <section id="tab-add" class="panel hidden">
-          <div class="sectionHead">
-            <div>
-              <h2>Add Content</h2>
-              <p>Add your own question entries to the archive and optionally sync them to Firestore.</p>
-            </div>
-          </div>
-          <div class="layout" style="grid-template-columns:1fr .95fr;gap:14px;">
-            <div class="card">
-              <h3 style="margin-top:0;">Add archive entry</h3>
-              <div class="split">
-                <select id="addYear"></select>
-                <select id="addCourse"></select>
-              </div>
-              <div class="split" style="margin-top:10px;">
-                <input id="addPaper" placeholder="Paper label e.g. Main Exam" />
-                <input id="addTopic" placeholder="Topic tag" />
-              </div>
-              <div style="height:10px"></div>
-              <textarea id="addQuestion" placeholder="Question text"></textarea>
-              <div style="height:10px"></div>
-              <div class="controls">
-                <button class="success" id="addQuestionBtn">Save to archive</button>
-                <button id="syncQuestionsBtn">Sync archive to Firestore</button>
-              </div>
-            </div>
-            <div class="card">
-              <h3 style="margin-top:0;">Import / Export</h3>
-              <p class="small" style="line-height:1.7;">Use this area to move your real archive data in and out of the app.</p>
-              <div class="controls">
-                <button id="exportBtn">Export archive JSON</button>
-                <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;flex:1 1 220px;">
-                  <input id="importFile" type="file" accept="application/json" style="display:none;" />
-                  <span class="pill" style="display:inline-block;width:100%;">Choose JSON file to import</span>
-                </label>
-              </div>
-              <div class="divider"></div>
-              <div class="tip">A clean GitHub Pages workflow is: upload this HTML file, keep Firebase auth and Firestore enabled, then manage data from the Add Content section.</div>
-            </div>
-          </div>
-        </section>
+                <!-- PAST QUESTIONS VIEW -->
+                <div id="view-past-questions" class="view-section hidden flex flex-col h-full max-w-5xl mx-auto">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap gap-4 items-end">
+                        <div class="flex-1 min-w-[200px]">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Course</label>
+                            <select id="pq-course" class="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <option>Linear Algebra</option>
+                                <option>Problem Solving and Critical Thinking</option>
+                                <option>Digital fundamentals</option>
+                                <option>Computer Hardware and Maintenance</option>
+                                <option>Introduction to computer science</option>
+                                <option>Communication skills</option>
+                                <option>Introduction to structured programming</option>
+                                <option>Principles of economics</option>
+                            </select>
+                        </div>
+                        <div class="w-full sm:w-48">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Year</label>
+                            <select id="pq-year" class="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <option>2026</option>
+                                <option>2025</option>
+                                <option>2024</option>
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                                <option>2020</option>
+                            </select>
+                        </div>
+                        <button onclick="loadPastQuestions()" class="bg-slate-800 text-white px-6 py-2 rounded-lg hover:bg-slate-700 transition-colors h-[42px]">
+                            Load Paper
+                        </button>
+                    </div>
 
-        <section id="tab-account" class="panel hidden">
-          <div class="sectionHead">
-            <div>
-              <h2>Account</h2>
-              <p>Manage your local preferences and see the current Firebase-linked profile.</p>
+                    <div id="pq-content" class="flex-1 overflow-y-auto bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+                        <div class="text-center text-slate-400 mt-10" id="pq-placeholder">
+                            <i class="fas fa-file-alt text-4xl mb-3"></i>
+                            <p>Select a course and year to view past questions.</p>
+                        </div>
+                        <div id="pq-document" class="hidden">
+                            <div class="border-b-2 border-slate-800 pb-4 mb-6 flex justify-between items-start">
+                                <div>
+                                    <h2 class="text-2xl font-bold uppercase tracking-wide" id="doc-course-title">Course Title</h2>
+                                    <p class="text-slate-600 font-medium mt-1">HND Computer Science - <span id="doc-year">202X</span></p>
+                                </div>
+                                <button onclick="summarizeCurrentPaper()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors flex items-center gap-2">
+                                    <i class="fas fa-sparkles"></i> AI Summary & Help
+                                </button>
+                            </div>
+                            <div id="doc-questions" class="space-y-6 text-slate-800">
+                                <!-- Questions will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI TUTOR VIEW -->
+                <div id="view-ai-tutor" class="view-section hidden flex flex-col h-[calc(100vh-8rem)] max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-800 text-white p-4 flex justify-between items-center shrink-0">
+                        <div>
+                            <h3 class="font-bold flex items-center gap-2"><i class="fas fa-robot text-indigo-400"></i> AI Study Assistant</h3>
+                            <p class="text-xs text-slate-300">Connected to live web search. Ask about courses, concepts, or past questions.</p>
+                        </div>
+                        <button onclick="clearChat()" class="text-slate-300 hover:text-white text-sm"><i class="fas fa-trash-alt mr-1"></i> Clear</button>
+                    </div>
+                    
+                    <div id="ai-chat-history" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                        <!-- Chat messages -->
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs"></i></div>
+                            <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 text-sm">
+                                Hello! I'm your AI tutor. I can summarize course sections, solve past questions, or search the web to explain concepts from your HND syllabus. What do you need help with today?
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white border-t border-slate-200 shrink-0">
+                        <form id="ai-chat-form" class="relative flex items-center">
+                            <input type="text" id="ai-input" class="w-full border border-slate-300 rounded-full pl-4 pr-12 py-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm" placeholder="Ask a question or paste a topic to summarize...">
+                            <button type="submit" class="absolute right-2 w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 transition-colors">
+                                <i class="fas fa-paper-plane text-xs"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- LIVE CHAT VIEW -->
+                <div id="view-live-chat" class="view-section hidden h-[calc(100vh-8rem)] flex gap-6 max-w-6xl mx-auto">
+                    <!-- Room Selection -->
+                    <div class="w-1/3 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden shrink-0">
+                        <div class="p-4 bg-slate-800 text-white">
+                            <h3 class="font-bold">Study Rooms</h3>
+                            <p class="text-xs text-slate-300">Join a collaborative session</p>
+                        </div>
+                        <div class="p-2 space-y-2 flex-1 overflow-y-auto">
+                            <button onclick="joinRoom('room_2')" class="room-btn w-full text-left p-3 rounded-lg hover:bg-slate-50 border border-transparent focus:border-indigo-300 transition-colors flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-user-friends"></i></div>
+                                <div>
+                                    <div class="font-semibold text-slate-800 text-sm">Peer Review (2 Max)</div>
+                                    <div class="text-xs text-slate-500">1-on-1 study session</div>
+                                </div>
+                            </button>
+                            <button onclick="joinRoom('room_4')" class="room-btn w-full text-left p-3 rounded-lg hover:bg-slate-50 border border-transparent focus:border-indigo-300 transition-colors flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-users"></i></div>
+                                <div>
+                                    <div class="font-semibold text-slate-800 text-sm">Study Group (4 Max)</div>
+                                    <div class="text-xs text-slate-500">Small focused group</div>
+                                </div>
+                            </button>
+                            <button onclick="joinRoom('room_8')" class="room-btn w-full text-left p-3 rounded-lg hover:bg-slate-50 border border-transparent focus:border-indigo-300 transition-colors flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fas fa-users-cog"></i></div>
+                                <div>
+                                    <div class="font-semibold text-slate-800 text-sm">Discussion Panel (8 Max)</div>
+                                    <div class="text-xs text-slate-500">Medium group study</div>
+                                </div>
+                            </button>
+                            <button onclick="joinRoom('room_20')" class="room-btn w-full text-left p-3 rounded-lg hover:bg-slate-50 border border-transparent focus:border-indigo-300 transition-colors flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fas fa-chalkboard-teacher"></i></div>
+                                <div>
+                                    <div class="font-semibold text-slate-800 text-sm">Class Lecture (20 Max)</div>
+                                    <div class="text-xs text-slate-500">Large open discussion</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Interface -->
+                    <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden relative">
+                        <div id="room-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-slate-500">
+                            <i class="fas fa-comments text-4xl mb-3 text-slate-300"></i>
+                            <p>Select a room on the left to join the discussion.</p>
+                        </div>
+
+                        <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                            <h3 id="current-room-title" class="font-bold text-slate-800">Select a Room</h3>
+                            <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded font-medium">Live</span>
+                        </div>
+                        
+                        <div id="live-chat-history" class="flex-1 overflow-y-auto p-4 space-y-4">
+                            <!-- Live messages inject here -->
+                        </div>
+
+                        <div class="p-4 border-t border-slate-200 bg-white">
+                            <form id="live-chat-form" class="flex gap-2">
+                                <input type="text" id="live-chat-input" disabled class="flex-1 border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-indigo-500 text-sm disabled:bg-slate-50 disabled:cursor-not-allowed" placeholder="Type a message...">
+                                <button type="submit" disabled id="live-chat-send" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-          </div>
-          <div class="card">
-            <div class="small">Signed-in profile</div>
-            <div id="profileName" style="font-weight:900;font-size:18px;margin-top:4px;">—</div>
-            <div id="profileEmail" style="color:var(--muted);margin-top:6px;">—</div>
-            <div class="divider"></div>
-            <button class="danger" id="resetLocalBtn">Reset local cache</button>
-          </div>
-        </section>
-      </main>
+        </main>
     </div>
-  </div>
 
-  <div id="settingsModal" class="modalBackdrop">
-    <div class="modal">
-      <div class="sectionHead" style="margin-bottom:12px;">
-        <div>
-          <h3>AI settings</h3>
-          <p>Store your Gemini API key in this browser only.</p>
-        </div>
-        <button id="closeSettingsBtn">Close</button>
-      </div>
-      <div class="keyRow">
-        <input id="settingsGeminiKey" type="password" placeholder="Gemini API key" />
-        <button class="primary" id="saveSettingsBtn">Save key</button>
-      </div>
-      <div class="footerNote" style="margin-top:10px;">If you publish the site publicly, prefer a restricted key or a backend proxy so visitors cannot abuse your quota.</div>
-    </div>
-  </div>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  <div id="toast" class="toast"></div>
-
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, limit, runTransaction, arrayUnion, arrayRemove, where } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
-
-    const FIREBASE_CONFIG = {
-      apiKey: 'AIzaSyC7DibZ1r7QyjnRc-SsWvM-3kJvF1lQXVk',
-      authDomain: 'ppss-7f266.firebaseapp.com',
-      projectId: 'ppss-7f266',
-      storageBucket: 'ppss-7f266.firebasestorage.app',
-      messagingSenderId: '388822191031',
-      appId: '1:388822191031:web:c5509b3271835ae93a3632'
-    };
-
-    const COURSES = [
-      'Linear Algebra',
-      'Problem Solving and Critical Thinking',
-      'Digital Fundamentals',
-      'Computer Hardware and Maintenance',
-      'Introduction to Computer Science',
-      'Communication Skills',
-      'Introduction to Structured Programming',
-      'Principles of Economics'
-    ];
-    const YEARS = [2020,2021,2022,2023,2024,2025,2026];
-    const YEARS_WITH_ALL = ['all', ...YEARS];
-    const LS = {
-      profile: 'hnd_profile_v2',
-      archive: 'hnd_archive_v2',
-      resources: 'hnd_resources_v2',
-      gemini: 'hnd_gemini_key_v2',
-      room: 'hnd_current_room_v2'
-    };
-
-    const state = {
-      app: null,
-      auth: null,
-      db: null,
-      user: null,
-      profile: null,
-      archive: [],
-      filtered: [],
-      resources: [],
-      currentTab: 'archive',
-      currentRoom: null,
-      roomUnsub: null,
-      messagesUnsub: null,
-      roomsCache: [],
-      geminiKey: localStorage.getItem(LS.gemini) || ''
-    };
-
-    const el = (id) => document.getElementById(id);
-    const toast = (msg) => {
-      const t = el('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => { t.style.display = 'none'; }, 2600);
-    };
-    const escapeHTML = (s) => String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
-    const loadJSON = (key, fallback) => {
-      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
-    };
-    const saveJSON = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-
-    function makeSeedArchive(){
-      const questionTemplates = {
-        'Linear Algebra': [
-          'Solve a system of linear equations using Gaussian elimination.',
-          'Find the determinant and inverse of a 3×3 matrix where possible.',
-          'Explain rank, nullity, and the meaning of a basis in vector spaces.'
-        ],
-        'Problem Solving and Critical Thinking': [
-          'Describe the steps of the problem-solving process with an example.',
-          'Differentiate inductive and deductive reasoning in decision making.',
-          'Identify barriers to critical thinking and how to reduce them.'
-        ],
-        'Digital Fundamentals': [
-          'Convert numbers between binary, decimal, and hexadecimal systems.',
-          'Explain logic gates and construct a truth table for a basic circuit.',
-          'State the differences between analog and digital signals.'
-        ],
-        'Computer Hardware and Maintenance': [
-          'Identify the major components of a computer system and their functions.',
-          'Outline preventive maintenance procedures for a desktop computer.',
-          'Explain common hardware faults and how to troubleshoot them.'
-        ],
-        'Introduction to Computer Science': [
-          'Define data, information, algorithm, and program.',
-          'Explain the generations of computers and their major characteristics.',
-          'Discuss the role of computers in modern society.'
-        ],
-        'Communication Skills': [
-          'List the stages of the communication process.',
-          'Write a short formal memo and identify its key features.',
-          'Explain barriers to effective communication and how to overcome them.'
-        ],
-        'Introduction to Structured Programming': [
-          'Write pseudocode for a simple program that calculates student average.',
-          'Explain sequence, selection, and iteration with examples.',
-          'Compare variables, constants, and data types in programming.'
-        ],
-        'Principles of Economics': [
-          'Explain supply and demand and how they affect price.',
-          'Differentiate microeconomics from macroeconomics.',
-          'Discuss the concept of opportunity cost with examples.'
-        ]
-      };
-      const arr = [];
-      YEARS.forEach((year, i) => {
-        COURSES.forEach((course, j) => {
-          const list = questionTemplates[course];
-          arr.push({
-            id: `${year}-${j}-a`,
-            year,
-            course,
-            paper: `Exam Set ${String.fromCharCode(65 + ((i+j)%3))}`,
-            topic: course.toLowerCase().replace(/\s+/g,'-'),
-            question: `${list[(i+j)%list.length]}\n\n[Starter archive entry for ${year} — ${course}]`,
-            source: 'starter'
-          });
-          arr.push({
-            id: `${year}-${j}-b`,
-            year,
-            course,
-            paper: 'Revision Question',
-            topic: course.toLowerCase().replace(/\s+/g,'-'),
-            question: `Explain one major idea from ${course} that students should understand in ${year}. Give an example and show how it is used in practice.`,
-            source: 'starter'
-          });
-        });
-      });
-      return arr;
-    }
-
-    function buildArchiveFromLocalOrSeed(){
-      const stored = loadJSON(LS.archive, null);
-      if (Array.isArray(stored) && stored.length) return stored;
-      const seed = makeSeedArchive();
-      saveJSON(LS.archive, seed);
-      return seed;
-    }
-
-    function seedResources(){
-      const stored = loadJSON(LS.resources, null);
-      if (Array.isArray(stored)) return stored;
-      const seed = [
-        { id:'r1', title:'How to revise structured programming', url:'', text:'Start with definitions of variables, constants, sequence, selection, iteration, then write pseudocode and short traced examples.' },
-        { id:'r2', title:'Digital fundamentals revision', url:'', text:'Focus on number systems, logic gates, truth tables, Boolean expressions, and simple circuit interpretation.' }
-      ];
-      saveJSON(LS.resources, seed);
-      return seed;
-    }
-
-    function initApp(){
-      state.app = initializeApp(FIREBASE_CONFIG);
-      state.auth = getAuth(state.app);
-      state.db = getFirestore(state.app);
-      state.archive = buildArchiveFromLocalOrSeed();
-      state.resources = seedResources();
-      bindUI();
-      populateSelectors();
-      applyFilters();
-      renderResources();
-      loadGeminiKeyIntoUI();
-      onAuthStateChanged(state.auth, async (user) => {
-        if (user) {
-          state.user = user;
-          const display = user.displayName || user.email?.split('@')[0] || 'Student';
-          el('userPill').textContent = `Signed in as ${display}`;
-          el('profileName').textContent = display;
-          el('profileEmail').textContent = user.email || 'No email available';
-          el('authScreen').classList.add('hidden');
-          el('appScreen').classList.remove('hidden');
-          await ensureProfile(user);
-          await loadSyncedData();
-          await loadRemoteResources();
-          if (!window.__archiveUnsub) window.__archiveUnsub = syncLocalArchiveFromFirestore();
-          await loadRoomsList();
-          if (state.currentRoom) await joinRoom(state.currentRoom.name, state.currentRoom.capacity, state.currentRoom.nick, true);
-          else renderRoomTabs();
-        } else {
-          state.user = null;
-          state.profile = null;
-          el('authScreen').classList.remove('hidden');
-          el('appScreen').classList.add('hidden');
-        }
-      });
-    }
-
-    function bindUI(){
-      // Auth
-      el('signupBtn').addEventListener('click', signup);
-      el('loginBtn').addEventListener('click', login);
-      el('logoutBtn').addEventListener('click', async () => { await signOut(state.auth); localStorage.removeItem(LS.room); state.currentRoom = null; });
-      el('saveGeminiKeyBtn').addEventListener('click', saveGeminiKeyFromAuthScreen);
-      el('settingsBtn').addEventListener('click', () => showModal(true));
-      el('closeSettingsBtn').addEventListener('click', () => showModal(false));
-      el('saveSettingsBtn').addEventListener('click', saveGeminiKeyFromSettings);
-      el('settingsModal').addEventListener('click', (e) => { if (e.target === el('settingsModal')) showModal(false); });
-
-      // Tabs
-      document.querySelectorAll('.nav button').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
-
-      // Filters
-      el('yearFilter').addEventListener('change', applyFilters);
-      el('courseFilter').addEventListener('change', applyFilters);
-      el('searchFilter').addEventListener('input', applyFilters);
-      el('clearFiltersBtn').addEventListener('click', () => {
-        el('yearFilter').value = 'all'; el('courseFilter').value = 'all'; el('searchFilter').value = ''; applyFilters();
-      });
-
-      // AI tutor
-      el('summarizeBtn').addEventListener('click', () => el('assistantAnswer').textContent = summarizeCurrentView());
-      el('useContextBtn').addEventListener('click', () => { switchTab('assistant'); el('assistantAnswer').textContent = summarizeCurrentView(); });
-      el('askAiBtn').addEventListener('click', askAI);
-      el('assistantQuestion').addEventListener('keydown', (e) => { if (e.key === 'Enter') askAI(); });
-
-      // Rooms
-      el('joinRoomBtn').addEventListener('click', () => {
-        const name = el('roomName').value.trim();
-        const nick = el('roomNick').value.trim() || state.user?.email?.split('@')[0] || 'Guest';
-        const capacity = Number(el('roomSize').value);
-        if (!name) return toast('Enter a room name first.');
-        joinRoom(name, capacity, nick).catch(err => alert(err.message));
-      });
-      el('leaveRoomBtn').addEventListener('click', leaveRoom);
-      el('sendChatBtn').addEventListener('click', sendChat);
-      el('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
-
-      // Resources
-      el('saveResourceBtn').addEventListener('click', saveResource);
-
-      // Add content
-      el('addQuestionBtn').addEventListener('click', addQuestionToArchive);
-      el('syncQuestionsBtn').addEventListener('click', syncArchiveToFirestore);
-      el('exportBtn').addEventListener('click', exportArchive);
-      el('importFile').addEventListener('change', importArchive);
-
-      // Account
-      el('resetLocalBtn').addEventListener('click', resetLocalData);
-    }
-
-    function populateSelectors(){
-      const yearOptions = YEARS.map(y => `<option value="${y}">${y}</option>`).join('');
-      el('yearFilter').innerHTML = `<option value="all">All years</option>${yearOptions}`;
-      el('courseFilter').innerHTML = `<option value="all">All courses</option>${COURSES.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('')}`;
-      el('addYear').innerHTML = YEARS.map(y => `<option value="${y}">${y}</option>`).join('');
-      el('addCourse').innerHTML = COURSES.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');
-    }
-
-    function switchTab(tab){
-      state.currentTab = tab;
-      document.querySelectorAll('.nav button').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
-      document.querySelectorAll('[id^="tab-"]').forEach(s => s.classList.add('hidden'));
-      el(`tab-${tab}`).classList.remove('hidden');
-      if (tab === 'chat') renderRoomTabs();
-    }
-
-    async function signup(){
-      const displayName = el('signupName').value.trim();
-      const email = el('signupEmail').value.trim();
-      const password = el('signupPassword').value;
-      if (!email || !password) return alert('Enter email and password.');
-      try {
-        const cred = await createUserWithEmailAndPassword(state.auth, email, password);
-        if (displayName) await updateProfile(cred.user, { displayName });
-        await setDoc(doc(state.db, 'users', cred.user.uid), {
-          uid: cred.user.uid,
-          displayName: displayName || email.split('@')[0],
-          email,
-          createdAt: serverTimestamp()
-        }, { merge: true });
-        toast('Account created successfully.');
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-
-    async function login(){
-      const email = el('loginEmail').value.trim();
-      const password = el('loginPassword').value;
-      if (!email || !password) return alert('Enter email and password.');
-      try {
-        await signInWithEmailAndPassword(state.auth, email, password);
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-
-    async function ensureProfile(user){
-      const ref = doc(state.db, 'users', user.uid);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        await setDoc(ref, {
-          uid: user.uid,
-          displayName: user.displayName || user.email?.split('@')[0] || 'Student',
-          email: user.email || '',
-          createdAt: serverTimestamp()
-        }, { merge: true });
-      }
-      state.profile = (await getDoc(ref)).data();
-      saveJSON(LS.profile, state.profile);
-    }
-
-    function renderArchiveSummary(){
-      const items = state.filtered.length ? state.filtered : state.archive;
-      const years = [...new Set(items.map(i => i.year))].sort((a,b) => a-b);
-      const courses = [...new Set(items.map(i => i.course))];
-      el('archiveSummary').innerHTML = `Showing <b>${items.length}</b> entries across <b>${courses.length}</b> course(s) and <b>${years.length}</b> year(s). ${years.length ? `Visible years: <b>${years.join(', ')}</b>.` : ''}`;
-    }
-
-    function applyFilters(){
-      const year = el('yearFilter').value;
-      const course = el('courseFilter').value;
-      const term = el('searchFilter').value.trim().toLowerCase();
-      state.filtered = state.archive.filter(q => {
-        const okYear = year === 'all' || String(q.year) === year;
-        const okCourse = course === 'all' || q.course === course;
-        const okTerm = !term || `${q.year} ${q.course} ${q.paper} ${q.question} ${q.topic}`.toLowerCase().includes(term);
-        return okYear && okCourse && okTerm;
-      });
-      renderArchiveSummary();
-      renderQuestions();
-    }
-
-    function renderQuestions(){
-      const wrap = el('questionCards');
-      if (!state.filtered.length) { wrap.innerHTML = '<div class="card">No questions match the current filters.</div>'; return; }
-      wrap.innerHTML = state.filtered.slice(0, 160).map(item => `
-        <article class="card">
-          <div class="meta">
-            <span class="tag">${item.year}</span>
-            <span class="tag green">${escapeHTML(item.course)}</span>
-            <span class="badge">${escapeHTML(item.paper)}</span>
-          </div>
-          <div class="question">${escapeHTML(item.question)}</div>
-          <div class="small">Topic: ${escapeHTML(item.topic || 'general')}</div>
-        </article>
-      `).join('');
-    }
-
-    function summarizeCurrentView(){
-      const items = state.filtered.length ? state.filtered : state.archive;
-      const byCourse = Object.fromEntries(COURSES.map(c => [c, 0]));
-      const byYear = Object.fromEntries(YEARS.map(y => [y, 0]));
-      items.forEach(i => { if (byCourse[i.course] !== undefined) byCourse[i.course]++; if (byYear[i.year] !== undefined) byYear[i.year]++; });
-      const topCourse = Object.entries(byCourse).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
-      const years = Object.entries(byYear).filter(([,v]) => v > 0).map(([k]) => k).join(', ') || 'none';
-      const resources = state.resources.length;
-      const note = el('assistantNotes').value.trim();
-      return `This view contains ${items.length} archive item(s). The most visible course pattern is ${topCourse}. Years covered here: ${years}. You also have ${resources} saved resource(s). ${note ? `Additional notes were included from your pasted text.` : ''} For revision, define the concept, explain the process, and answer one exam-style example.`;
-    }
-
-    function buildContext(){
-      const archiveContext = state.filtered.length ? state.filtered : state.archive;
-      const archiveText = archiveContext.slice(0, 24).map(q => `${q.year} | ${q.course} | ${q.paper} | ${q.question}`).join('\n');
-      const resourceText = state.resources.slice(0, 10).map(r => `${r.title}: ${r.text} ${r.url || ''}`).join('\n');
-      const noteText = el('assistantNotes').value.trim();
-      return { archiveText, resourceText, noteText };
-    }
-
-    function offlineAnswer(prompt){
-      const p = prompt.toLowerCase();
-      if (p.includes('summar') || p.includes('summary')) return summarizeCurrentView();
-      const course = COURSES.find(c => p.includes(c.toLowerCase()));
-      if (course) {
-        const examples = state.archive.filter(q => q.course === course).slice(0,3).map(q => `• ${q.question.split('\n')[0]}`);
-        return `For ${course}, start with definitions, then give one worked example. Useful prompts from your archive:\n${examples.join('\n')}`;
-      }
-      if (p.includes('revise') || p.includes('study plan')) {
-        return `Use a three-step pattern: 1) read the concept, 2) explain it in your own words, 3) solve a short question. Keep revising the current filtered view and compare one new topic with one old topic.`;
-      }
-      return `I could not find a direct match in the current archive. Try naming a course, topic, year, or paste text into the notes box. I can then summarize that material and generate revision guidance.`;
-    }
-
-    async function askAI(){
-      const prompt = el('assistantQuestion').value.trim();
-      if (!prompt) return;
-      const context = buildContext();
-      const fullPrompt = `You are a helpful HND Computer Science tutor. Keep answers clear, practical, and student-friendly.\n\nARCHIVE CONTEXT:\n${context.archiveText}\n\nRESOURCE NOTES:\n${context.resourceText}\n\nPASTED NOTES:\n${context.noteText}\n\nQUESTION:\n${prompt}`;
-      el('assistantAnswer').textContent = 'Thinking...';
-      const key = state.geminiKey || localStorage.getItem(LS.gemini) || '';
-      if (!key) {
-        el('assistantAnswer').textContent = offlineAnswer(prompt);
-        return;
-      }
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`, {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: fullPrompt }] }],
-            generationConfig: { temperature: 0.4, maxOutputTokens: 900 }
-          })
-        });
-        const data = await res.json();
-        const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || data?.error?.message || '';
-        el('assistantAnswer').textContent = text || offlineAnswer(prompt);
-      } catch (err) {
-        console.error(err);
-        el('assistantAnswer').textContent = offlineAnswer(prompt);
-      }
-    }
-
-    function renderResources(){
-      const wrap = el('resourceList');
-      if (!state.resources.length) { wrap.innerHTML = '<div class="small">No resources saved yet.</div>'; return; }
-      wrap.innerHTML = state.resources.map(r => `
-        <div class="resource">
-          <div style="font-weight:900;">${escapeHTML(r.title)}</div>
-          ${r.url ? `<div class="url">${escapeHTML(r.url)}</div>` : ''}
-          ${r.text ? `<div class="text">${escapeHTML(r.text.slice(0,700))}${r.text.length > 700 ? '...' : ''}</div>` : ''}
-        </div>
-      `).join('');
-    }
-
-    async function saveResourceDraft(){
-      const title = el('resourceTitle').value.trim();
-      const url = el('resourceUrl').value.trim();
-      const text = el('resourceText').value.trim();
-      if (!title && !url && !text) return alert('Add at least a title, URL, or text.');
-      const resource = { id: crypto.randomUUID?.() || String(Date.now()), title: title || 'Untitled resource', url, text, createdAt: Date.now(), uid: state.user.uid };
-      state.resources.unshift(resource);
-      saveJSON(LS.resources, state.resources);
-      renderResources();
-      el('resourceTitle').value = ''; el('resourceUrl').value = ''; el('resourceText').value = '';
-      if (state.db && state.user) {
-        await setDoc(doc(state.db, 'users', state.user.uid, 'resources', resource.id), { ...resource, createdAt: serverTimestamp() }, { merge: true });
-      }
-      toast('Resource saved.');
-    }
-
-    function loadGeminiKeyIntoUI(){
-      el('geminiKeyInput').value = state.geminiKey;
-      el('settingsGeminiKey').value = state.geminiKey;
-    }
-    function saveGeminiKeyFromAuthScreen(){
-      state.geminiKey = el('geminiKeyInput').value.trim();
-      localStorage.setItem(LS.gemini, state.geminiKey);
-      el('settingsGeminiKey').value = state.geminiKey;
-      toast('AI key saved locally.');
-    }
-    function saveGeminiKeyFromSettings(){
-      state.geminiKey = el('settingsGeminiKey').value.trim();
-      localStorage.setItem(LS.gemini, state.geminiKey);
-      el('geminiKeyInput').value = state.geminiKey;
-      toast('AI key saved locally.');
-      showModal(false);
-    }
-    function showModal(show){ el('settingsModal').style.display = show ? 'flex' : 'none'; }
-
-    async function loadSyncedData(){
-      if (!state.db || !state.user) return;
-      const resCol = collection(state.db, 'users', state.user.uid, 'resources');
-      const snap = await getDocs(query(resCol));
-      const remoteResources = [];
-      snap.forEach(d => remoteResources.push({ id:d.id, ...d.data() }));
-      if (remoteResources.length) {
-        state.resources = remoteResources.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        saveJSON(LS.resources, state.resources);
-        renderResources();
-      }
-    }
-
-    async function addQuestionToArchiveLegacy(){
-      const year = Number(el('addYear').value);
-      const course = el('addCourse').value;
-      const paper = el('addPaper').value.trim() || 'Main Exam';
-      const topic = el('addTopic').value.trim() || course.toLowerCase().replace(/\s+/g,'-');
-      const question = el('addQuestion').value.trim();
-      if (!question) return alert('Write a question first.');
-      const item = { id: crypto.randomUUID?.() || String(Date.now()), year, course, paper, topic, question, source: 'user' };
-      state.archive.unshift(item);
-      saveJSON(LS.archive, state.archive);
-      applyFilters();
-      el('addPaper').value = ''; el('addTopic').value = ''; el('addQuestion').value = '';
-      toast('Question added to archive.');
-      if (state.db && state.user) {
-        await setDoc(doc(state.db, 'archive', item.id), { ...item, uid: state.user.uid, createdAt: serverTimestamp() }, { merge: true });
-      }
-    }
-
-    async function syncArchiveToFirestoreLegacy(){
-      if (!state.db || !state.user) return alert('Sign in first.');
-      const archiveCol = collection(state.db, 'archive');
-      let count = 0;
-      for (const item of state.archive.slice(0, 200)) {
-        await setDoc(doc(archiveCol, item.id), { ...item, uid: state.user.uid, syncedAt: serverTimestamp() }, { merge: true });
-        count++;
-      }
-      toast(`Synced ${count} archive item(s) to Firestore.`);
-    }
-
-    function exportArchiveLegacy(){
-      const blob = new Blob([JSON.stringify(state.archive, null, 2)], { type:'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'hnd_archive.json'; a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    async function importArchiveLegacy(evt){
-      const file = evt.target.files?.[0];
-      if (!file) return;
-      const text = await file.text();
-      try {
-        const data = JSON.parse(text);
-        if (!Array.isArray(data)) throw new Error('JSON must be an array of archive objects.');
-        state.archive = data;
-        saveJSON(LS.archive, state.archive);
-        applyFilters();
-        toast('Archive imported.');
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        evt.target.value = '';
-      }
-    }
-
-    function resetLocalDataLegacy(){
-      if (!confirm('Clear local cache, archive, resources, and saved AI key from this browser?')) return;
-      Object.values(LS).forEach(k => localStorage.removeItem(k));
-      toast('Local data cleared. Refreshing...');
-      setTimeout(() => location.reload(), 600);
-    }
-
-    async function loadRoomsList(){
-      if (!state.db || !state.user) return;
-      const roomsSnap = await getDocs(collection(state.db, 'rooms'));
-      state.roomsCache = [];
-      roomsSnap.forEach(d => state.roomsCache.push({ id:d.id, ...d.data() }));
-      renderRoomTabs();
-    }
-
-    function renderRoomTabs(){
-      const wrap = el('roomTabs');
-      const rooms = state.roomsCache || [];
-      if (!rooms.length) {
-        wrap.innerHTML = '<span class="small">No rooms yet. Join a room to create it.</span>';
-        return;
-      }
-      wrap.innerHTML = rooms.map(r => `<button data-room="${escapeHTML(r.name)}" class="${state.currentRoom?.name === r.name ? 'active' : ''}">${escapeHTML(r.name)} (${r.capacity})</button>`).join('');
-      wrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
-        const room = rooms.find(r => r.name === btn.dataset.room);
-        if (room) joinRoom(room.name, room.capacity, state.currentRoom?.nick || state.user?.displayName || state.user?.email?.split('@')[0] || 'Guest').catch(console.error);
-      }));
-    }
-
-    function roomDocId(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'room'; }
-
-    async function joinRoom(name, capacity, nick, silent=false){
-      if (!state.db || !state.user) throw new Error('Please sign in first.');
-      const roomId = roomDocId(name);
-      const roomRef = doc(state.db, 'rooms', roomId);
-      const userId = state.user.uid;
-      const roomState = { name, capacity, nick };
-      await runTransaction(state.db, async (tx) => {
-        const snap = await tx.get(roomRef);
-        if (!snap.exists()) {
-          tx.set(roomRef, {
-            name,
-            capacity,
-            memberIds: [userId],
-            memberNames: [nick],
-            memberCount: 1,
-            createdBy: userId,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
-          return;
-        }
-        const data = snap.data();
-        const memberIds = Array.isArray(data.memberIds) ? data.memberIds : [];
-        const memberNames = Array.isArray(data.memberNames) ? data.memberNames : [];
-        const alreadyIn = memberIds.includes(userId);
-        if (!alreadyIn && Number(data.memberCount || 0) >= Number(data.capacity || capacity)) {
-          throw new Error(`This room is full. Capacity: ${data.capacity || capacity}.`);
-        }
-        const nextIds = alreadyIn ? memberIds : [...memberIds, userId];
-        const nextNames = alreadyIn ? memberNames : [...memberNames, nick];
-        tx.set(roomRef, {
-          name,
-          capacity,
-          memberIds: nextIds,
-          memberNames: nextNames,
-          memberCount: nextIds.length,
-          updatedAt: serverTimestamp()
-        }, { merge:true });
-      });
-
-      state.currentRoom = roomState;
-      localStorage.setItem(LS.room, JSON.stringify(roomState));
-      el('currentRoomLabel').textContent = name;
-      el('currentRoomCapacity').textContent = capacity;
-      el('currentRoomMembers').textContent = 'Loading...';
-      if (state.roomUnsub) state.roomUnsub();
-      if (state.messagesUnsub) state.messagesUnsub();
-      state.roomUnsub = onSnapshot(roomRef, (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.data();
-        const count = Number(data.memberCount || 0);
-        el('currentRoomLabel').textContent = data.name || name;
-        el('currentRoomCapacity').textContent = data.capacity || capacity;
-        el('currentRoomMembers').textContent = `${count} member(s)`;
-        state.roomsCache = state.roomsCache.filter(r => r.id !== roomId).concat([{ id: roomId, ...data }]);
-        renderRoomTabs();
-      });
-      const messagesQuery = query(collection(state.db, 'rooms', roomId, 'messages'), orderBy('createdAt', 'asc'), limit(200));
-      state.messagesUnsub = onSnapshot(messagesQuery, (snap) => {
-        const msgs = [];
-        snap.forEach(d => msgs.push({ id:d.id, ...d.data() }));
-        renderChat(msgs);
-      });
-      await loadRoomsList();
-      if (!silent) toast(`Joined room ${name}`);
-    }
-
-    async function leaveRoom(){
-      const room = state.currentRoom;
-      if (!room || !state.db || !state.user) return;
-      const roomRef = doc(state.db, 'rooms', roomDocId(room.name));
-      try {
-        await runTransaction(state.db, async (tx) => {
-          const snap = await tx.get(roomRef);
-          if (!snap.exists()) return;
-          const data = snap.data();
-          const memberIds = Array.isArray(data.memberIds) ? data.memberIds : [];
-          const memberNames = Array.isArray(data.memberNames) ? data.memberNames : [];
-          const uid = state.user.uid;
-          const idx = memberIds.indexOf(uid);
-          if (idx === -1) return;
-          memberIds.splice(idx, 1);
-          memberNames.splice(Math.max(0, memberNames.indexOf(room.nick)), 1);
-          tx.set(roomRef, { memberIds, memberNames, memberCount: memberIds.length, updatedAt: serverTimestamp() }, { merge:true });
-        });
-      } catch (err) {
-        console.warn(err);
-      }
-      if (state.roomUnsub) state.roomUnsub();
-      if (state.messagesUnsub) state.messagesUnsub();
-      state.roomUnsub = null; state.messagesUnsub = null;
-      state.currentRoom = null;
-      localStorage.removeItem(LS.room);
-      el('currentRoomLabel').textContent = 'No room joined';
-      el('currentRoomCapacity').textContent = '—';
-      el('currentRoomMembers').textContent = '—';
-      el('chatLog').innerHTML = '<div class="small">Leave a room or join another to begin chatting.</div>';
-      renderRoomTabs();
-      toast('Left room.');
-    }
-
-    function renderChat(messages){
-      const log = el('chatLog');
-      if (!messages?.length) { log.innerHTML = '<div class="small">No messages yet. Say hello to begin the room.</div>'; return; }
-      const me = state.currentRoom?.nick || state.user?.displayName || state.user?.email?.split('@')[0];
-      log.innerHTML = messages.map(m => `
-        <div class="bubble ${m.nick === me ? 'me' : ''}">
-          <div class="head">${escapeHTML(m.nick)} • ${m.createdAt?.toDate ? m.createdAt.toDate().toLocaleString() : new Date(m.createdAt || Date.now()).toLocaleString()}</div>
-          <div class="body">${escapeHTML(m.text)}</div>
-        </div>
-      `).join('');
-      log.scrollTop = log.scrollHeight;
-    }
-
-    async function sendChat(){
-      const text = el('chatInput').value.trim();
-      if (!text) return;
-      if (!state.currentRoom) return alert('Join a room first.');
-      const roomId = roomDocId(state.currentRoom.name);
-      const messageRef = collection(state.db, 'rooms', roomId, 'messages');
-      const nick = state.currentRoom.nick || state.user.displayName || state.user.email.split('@')[0] || 'Guest';
-      await addDoc(messageRef, { text, nick, uid: state.user.uid, createdAt: serverTimestamp() });
-      el('chatInput').value = '';
-    }
-
-    function buildAIContext(){
-      const items = state.filtered.length ? state.filtered : state.archive;
-      const archiveText = items.slice(0, 24).map(q => `${q.year} | ${q.course} | ${q.paper} | ${q.question}`).join('\n');
-      const resourcesText = state.resources.slice(0, 12).map(r => `${r.title}: ${r.text} ${r.url || ''}`).join('\n');
-      const notes = el('assistantNotes').value.trim();
-      return { archiveText, resourcesText, notes };
-    }
-
-    async function askGemini(prompt){
-      const key = state.geminiKey || localStorage.getItem(LS.gemini) || '';
-      if (!key) return null;
-      const ctx = buildAIContext();
-      const fullPrompt = `You are a helpful HND Computer Science tutor. Explain clearly, use simple language, and stay practical.\n\nCURRENT ARCHIVE:\n${ctx.archiveText}\n\nRESOURCES:\n${ctx.resourcesText}\n\nPASTED NOTES:\n${ctx.notes}\n\nSTUDENT QUESTION:\n${prompt}`;
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`, {
-        method: 'POST', headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }], generationConfig: { temperature: 0.35, maxOutputTokens: 900 } })
-      });
-      const data = await res.json();
-      const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || data?.error?.message || '';
-      return text || null;
-    }
-
-    function offlineTutor(prompt){
-      const p = prompt.toLowerCase();
-      if (p.includes('summary') || p.includes('summarize')) return summarizeCurrentView();
-      const course = COURSES.find(c => p.includes(c.toLowerCase()));
-      if (course) {
-        const sample = state.archive.filter(q => q.course === course).slice(0,3).map(q => `• ${q.question.split('\n')[0]}`);
-        return `For ${course}, start with definitions, then give one example, then write one short exam-style answer. Sample prompts from your archive:\n${sample.join('\n')}`;
-      }
-      if (p.includes('revision') || p.includes('study plan')) {
-        return `Use a 3-step pattern: define, explain, practice. Pick one course, read two questions, write your own short answers, and compare your answer to the topic summary.`;
-      }
-      return `I could not find a direct match. Try naming a course, year, or topic, or paste your notes into the box so I can summarize them.`;
-    }
-
-    async function handleAskAI(){
-      const prompt = el('assistantQuestion').value.trim();
-      if (!prompt) return;
-      el('assistantAnswer').textContent = 'Thinking...';
-      try {
-        const gemini = await askGemini(prompt);
-        el('assistantAnswer').textContent = gemini || offlineTutor(prompt);
-      } catch (err) {
-        console.error(err);
-        el('assistantAnswer').textContent = offlineTutor(prompt);
-      }
-    }
-
-    function saveResourceToLocal(resource){
-      state.resources.unshift(resource);
-      saveJSON(LS.resources, state.resources);
-      renderResources();
-    }
-
-    async function loadRemoteResources(){
-      if (!state.db || !state.user) return;
-      try {
-        const snap = await getDocs(collection(state.db, 'users', state.user.uid, 'resources'));
-        const arr = [];
-        snap.forEach(d => arr.push({ id:d.id, ...d.data() }));
-        if (arr.length) {
-          state.resources = arr.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-          saveJSON(LS.resources, state.resources);
-          renderResources();
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    }
-
-    function syncLocalArchiveFromFirestore(){
-      if (!state.db || !state.user) return;
-      const q = query(collection(state.db, 'archive'), orderBy('year', 'desc'));
-      return onSnapshot(q, snap => {
-        const remote = [];
-        snap.forEach(d => remote.push({ id:d.id, ...d.data() }));
-        if (remote.length) {
-          state.archive = remote;
-          saveJSON(LS.archive, state.archive);
-          applyFilters();
-        }
-      });
-    }
-
-    async function saveResource(){
-      const title = el('resourceTitle').value.trim();
-      const url = el('resourceUrl').value.trim();
-      const text = el('resourceText').value.trim();
-      if (!title && !url && !text) return alert('Add a title, URL, or text.');
-      const resource = { id: crypto.randomUUID?.() || String(Date.now()), title: title || 'Untitled resource', url, text, createdAt: Date.now(), uid: state.user?.uid || 'local' };
-      saveResourceToLocal(resource);
-      el('resourceTitle').value = ''; el('resourceUrl').value = ''; el('resourceText').value = '';
-      if (state.db && state.user) {
+        // Environment variables setup
+        const apiKey = ""; 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hnd-cs-portal-default';
+        let firebaseConfig = {};
+        
         try {
-          await setDoc(doc(state.db, 'users', state.user.uid, 'resources', resource.id), { ...resource, createdAt: serverTimestamp() }, { merge:true });
-        } catch (err) { console.warn(err); }
-      }
-      toast('Resource saved.');
-    }
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } else {
+                // Mock config for local structure viewing if missing
+                firebaseConfig = { apiKey: "mock", projectId: "mock", appId: "mock" };
+            }
+        } catch (e) {
+            console.error("Firebase config error", e);
+        }
 
-    async function syncArchiveToFirestore(){
-      if (!state.db || !state.user) return alert('Sign in first.');
-      const batchSize = Math.min(state.archive.length, 200);
-      for (let i=0; i<batchSize; i++) {
-        const item = state.archive[i];
-        await setDoc(doc(state.db, 'archive', item.id), { ...item, uid: state.user.uid, syncedAt: serverTimestamp() }, { merge:true });
-      }
-      toast(`Synced ${batchSize} archive item(s) to Firestore.`);
-    }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    async function addQuestionToArchive(){
-      const year = Number(el('addYear').value);
-      const course = el('addCourse').value;
-      const paper = el('addPaper').value.trim() || 'Main Exam';
-      const topic = el('addTopic').value.trim() || course.toLowerCase().replace(/\s+/g,'-');
-      const question = el('addQuestion').value.trim();
-      if (!question) return alert('Please enter a question.');
-      const item = { id: crypto.randomUUID?.() || String(Date.now()), year, course, paper, topic, question, source: 'user' };
-      state.archive.unshift(item);
-      saveJSON(LS.archive, state.archive);
-      applyFilters();
-      el('addPaper').value = ''; el('addTopic').value = ''; el('addQuestion').value = '';
-      toast('Question added.');
-      if (state.db && state.user) {
-        try { await setDoc(doc(state.db, 'archive', item.id), { ...item, uid: state.user.uid, createdAt: serverTimestamp() }, { merge:true }); } catch (err) { console.warn(err); }
-      }
-    }
+        // State variables
+        let currentUser = null;
+        let currentRoom = null;
+        let unsubscribeLiveChat = null;
+        let userData = { name: "Guest", studentId: "Unknown" };
 
-    function exportArchive(){
-      const blob = new Blob([JSON.stringify(state.archive, null, 2)], { type:'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'hnd-archive.json'; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const mainApp = document.getElementById('main-app');
+        const loginForm = document.getElementById('login-form');
+        const aiChatForm = document.getElementById('ai-chat-form');
+        const liveChatForm = document.getElementById('live-chat-form');
+        
+        // --- Authentication Logic (RULE 3) ---
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth init failed:", error);
+            }
+        }
 
-    async function importArchive(evt){
-      const file = evt.target.files?.[0];
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const data = JSON.parse(text);
-        if (!Array.isArray(data)) throw new Error('JSON must be an array of archive items.');
-        state.archive = data;
-        saveJSON(LS.archive, state.archive);
-        applyFilters();
-        toast('Archive imported.');
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        evt.target.value = '';
-      }
-    }
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                // If we got here normally, wait for user to submit login form to proceed visually
+            } else {
+                currentUser = null;
+            }
+        });
 
-    function resetLocalData(){
-      if (!confirm('Clear local archive, resources, AI key, and saved room state from this browser?')) return;
-      Object.values(LS).forEach(k => localStorage.removeItem(k));
-      toast('Local data cleared. Refreshing...');
-      setTimeout(() => location.reload(), 600);
-    }
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('login-name').value;
+            const sId = document.getElementById('login-id').value;
+            
+            // Set local user data
+            userData.name = name;
+            userData.studentId = sId;
+            
+            // Ensure auth is complete
+            if (!currentUser) {
+                await initAuth();
+            }
 
-    function loadSavedRoom(){
-      const saved = loadJSON(LS.room, null);
-      return saved && saved.name ? saved : null;
-    }
+            // Update UI
+            document.getElementById('user-name-display').textContent = name;
+            document.getElementById('welcome-name').textContent = name.split(' ')[0];
+            document.getElementById('user-id-display').textContent = sId;
+            document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+            
+            // Transition
+            loginScreen.classList.add('opacity-0');
+            setTimeout(() => {
+                loginScreen.classList.add('hidden');
+                mainApp.classList.remove('hidden');
+                // Small delay to allow display:flex to apply before fading in
+                setTimeout(() => mainApp.classList.remove('opacity-0'), 50);
+            }, 500);
+        });
 
-    function saveCurrentRoom(room){ localStorage.setItem(LS.room, JSON.stringify(room)); }
+        // Make logout globally available
+        window.logout = () => {
+            auth.signOut().then(() => {
+                mainApp.classList.add('opacity-0');
+                setTimeout(() => {
+                    mainApp.classList.add('hidden');
+                    loginScreen.classList.remove('hidden');
+                    setTimeout(() => loginScreen.classList.remove('opacity-0'), 50);
+                    document.getElementById('login-name').value = '';
+                    document.getElementById('login-id').value = '';
+                }, 500);
+            });
+        };
 
-    function loadGeminiUI(){
-      el('geminiKeyInput').value = state.geminiKey || '';
-      el('settingsGeminiKey').value = state.geminiKey || '';
-    }
+        // --- Navigation Logic ---
+        const pageTitles = {
+            'dashboard': 'Dashboard',
+            'past-questions': 'Past Questions Archive',
+            'ai-tutor': 'AI Study Assistant',
+            'live-chat': 'Collaborative Study Rooms'
+        };
 
-    function loadLocalArchiveAndResources(){
-      state.archive = buildArchiveFromLocalOrSeed();
-      state.resources = seedResources();
-      renderResources();
-      applyFilters();
-    }
+        window.navigate = (viewId) => {
+            // Update active state in sidebar
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === viewId) {
+                    btn.classList.add('bg-slate-50', 'text-indigo-600');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    btn.classList.remove('bg-slate-50', 'text-indigo-600');
+                    btn.classList.add('text-slate-600');
+                }
+            });
 
-    function setCurrentRoomState(name, capacity, nick){
-      state.currentRoom = { name, capacity, nick };
-      saveCurrentRoom(state.currentRoom);
-      el('currentRoomLabel').textContent = name;
-      el('currentRoomCapacity').textContent = capacity;
-    }
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.add('hidden');
+            });
 
-    async function boot(){
-      loadLocalArchiveAndResources();
-      loadGeminiUI();
-      initApp();
-      const saved = loadSavedRoom();
-      if (saved) state.currentRoom = saved;
-      const unsub = syncLocalArchiveFromFirestore();
-      window.addEventListener('beforeunload', async () => { try { await leaveRoom(); } catch {} });
-      window.__archiveUnsub = unsub;
-    }
+            // Show selected view
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            document.getElementById('page-title').textContent = pageTitles[viewId];
+        };
 
-    // startup
-    boot();
-  </script>
+        // --- Past Questions Mock Data & Logic ---
+        // Generating representative mock questions based on course topics
+        const generateQuestions = (course, year) => {
+            const generalStructure = [
+                { type: "section", title: "SECTION A: Answer All Questions" },
+                { num: "1a", text: "Define key concepts relevant to this course and explain their significance." },
+                { num: "1b", text: "Differentiate between theoretical and practical applications of the primary paradigm." },
+                { type: "section", title: "SECTION B: Answer any three (3) questions" },
+                { num: "2", text: "Outline the historical development of the field and its impact on modern computing." },
+                { num: "3a", text: "With the aid of a diagram, explain the architecture of a standard system model." },
+                { num: "3b", text: "List five (5) advantages of utilizing this architecture in enterprise environments." },
+                { num: "4", text: "Solve a complex scenario involving problem identification, analysis, and implementation strategies." },
+                { num: "5", text: "Write short notes on the following: (i) Abstraction (ii) Encapsulation (iii) Modularization." }
+            ];
+
+            // Course specific overrides to make it realistic
+            let specific = [...generalStructure];
+            if (course.includes("Linear Algebra")) {
+                specific[1] = { num: "1a", text: "Find the eigenvalues and corresponding eigenvectors of the matrix A = [[4, 2], [1, 3]]." };
+                specific[2] = { num: "1b", text: "Solve the system of linear equations using Cramer's rule: 2x - y + z = 5, x + 2y + 3z = 8, 3x - 4y + 2z = 3." };
+                specific[4] = { num: "2", text: "Prove that if vectors u, v, w are linearly independent, then u+v, v+w, w+u are also linearly independent." };
+            } else if (course.includes("Programming")) {
+                specific[1] = { num: "1a", text: "Write a C++ program to find the factorial of a number using a recursive function." };
+                specific[2] = { num: "1b", text: "Explain the concept of pointers and reference variables with code examples." };
+                specific[4] = { num: "2", text: "Design an algorithm and draw a flowchart to find the largest of three numbers." };
+            } else if (course.includes("Hardware")) {
+                specific[1] = { num: "1a", text: "Explain the boot sequence of a modern PC, identifying the role of the BIOS/UEFI." };
+                specific[2] = { num: "1b", text: "What are the common causes of a 'No Display' symptom, and how would you troubleshoot it?" };
+            } else if (course.includes("Digital")) {
+                specific[1] = { num: "1a", text: "Convert the decimal number 255 to Binary, Octal, and Hexadecimal." };
+                specific[2] = { num: "1b", text: "Simplify the Boolean expression Y = AB + A'C + BC using a Karnaugh Map." };
+            }
+
+            return specific;
+        };
+
+        window.loadPastQuestions = () => {
+            const course = document.getElementById('pq-course').value;
+            const year = document.getElementById('pq-year').value;
+            
+            document.getElementById('pq-placeholder').classList.add('hidden');
+            document.getElementById('pq-document').classList.remove('hidden');
+            
+            document.getElementById('doc-course-title').textContent = course;
+            document.getElementById('doc-year').textContent = year;
+
+            const questions = generateQuestions(course, year);
+            const container = document.getElementById('doc-questions');
+            container.innerHTML = '';
+
+            questions.forEach(q => {
+                if (q.type === 'section') {
+                    const sec = document.createElement('h3');
+                    sec.className = 'text-lg font-bold bg-slate-100 p-2 mt-6 mb-2 border-l-4 border-indigo-500';
+                    sec.textContent = q.title;
+                    container.appendChild(sec);
+                } else {
+                    const p = document.createElement('div');
+                    p.className = 'flex gap-3 mb-4';
+                    p.innerHTML = `<span class="font-bold min-w-[30px]">${q.num}.</span> <span class="flex-1">${q.text}</span>`;
+                    container.appendChild(p);
+                }
+            });
+        };
+
+        window.summarizeCurrentPaper = () => {
+            const course = document.getElementById('pq-course').value;
+            const year = document.getElementById('pq-year').value;
+            const prompt = `Can you summarize the key concepts typically tested in the ${course} exam based on HND Computer Science standards? Also provide a brief strategy on how to tackle these past questions.`;
+            
+            navigate('ai-tutor');
+            document.getElementById('ai-input').value = prompt;
+            // Trigger submit
+            aiChatForm.dispatchEvent(new Event('submit'));
+        };
+
+        // --- AI Tutor Logic (Gemini API) ---
+        const aiChatHistory = document.getElementById('ai-chat-history');
+        
+        const appendMessage = (text, isUser, groundingData = null) => {
+            const div = document.createElement('div');
+            div.className = `flex gap-4 ${isUser ? 'flex-row-reverse' : ''}`;
+            
+            const avatar = isUser ? 
+                `<div class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center shrink-0 font-bold text-xs">${userData.name.charAt(0).toUpperCase()}</div>` :
+                `<div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs"></i></div>`;
+            
+            // Basic markdown parsing for bold and line breaks
+            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    .replace(/\n\n/g, '</p><p>')
+                                    .replace(/\n/g, '<br>');
+                                    
+            if(!formattedText.startsWith('<p>')) formattedText = '<p>' + formattedText + '</p>';
+
+            let groundingHtml = '';
+            if (groundingData && groundingData.length > 0) {
+                groundingHtml = `<div class="mt-3 pt-3 border-t border-slate-200/60 text-xs">
+                    <p class="text-slate-500 mb-1 font-semibold"><i class="fas fa-globe text-indigo-400"></i> Web Sources:</p>
+                    <ul class="space-y-1">
+                        ${groundingData.slice(0, 3).map(g => `<li><a href="${g.uri}" target="_blank" class="text-indigo-600 hover:underline truncate block max-w-full">${g.title || new URL(g.uri).hostname}</a></li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+
+            div.innerHTML = `
+                ${avatar}
+                <div class="${isUser ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-2xl rounded-tl-none shadow-sm'} p-3 max-w-[85%] text-sm markdown-body">
+                    ${formattedText}
+                    ${groundingHtml}
+                </div>
+            `;
+            aiChatHistory.appendChild(div);
+            aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
+        };
+
+        const appendLoader = () => {
+            const div = document.createElement('div');
+            div.id = 'ai-loader';
+            div.className = `flex gap-4`;
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs"></i></div>
+                <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm">
+                    <div class="loader"></div>
+                </div>
+            `;
+            aiChatHistory.appendChild(div);
+            aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
+        };
+
+        const removeLoader = () => {
+            const loader = document.getElementById('ai-loader');
+            if(loader) loader.remove();
+        };
+
+        window.clearChat = () => {
+            aiChatHistory.innerHTML = `
+                <div class="flex gap-4">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs"></i></div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 text-sm">
+                        Chat cleared. What would you like to discuss next?
+                    </div>
+                </div>
+            `;
+        };
+
+        aiChatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('ai-input');
+            const prompt = input.value.trim();
+            if(!prompt) return;
+
+            appendMessage(prompt, true);
+            input.value = '';
+            appendLoader();
+
+            // Exponential backoff logic wrapper
+            const callGemini = async (retries = 5, delay = 1000) => {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                const systemPrompt = "You are an expert AI tutor for Higher National Diploma (HND) Computer Science students. Provide clear, concise, and academically accurate explanations. When asked about past questions or concepts, structure your answer pedagogically. If you use web sources, integrate the knowledge smoothly.";
+                
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    tools: [{ google_search: {} }]
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+                    
+                    const result = await response.json();
+                    return result;
+                } catch (err) {
+                    if (retries === 0) throw err;
+                    await new Promise(r => setTimeout(r, delay));
+                    return callGemini(retries - 1, delay * 2);
+                }
+            };
+
+            try {
+                // If API key is empty string, we mock the response to prevent UI crash in missing env
+                if(apiKey === "") {
+                    setTimeout(() => {
+                        removeLoader();
+                        appendMessage("I am the AI Tutor. To fully function and search the web, I need the Gemini API key provided by the environment. However, based on my built-in knowledge: To master HND Computer Science subjects like Linear Algebra or Programming, focus on understanding core principles before tackling complex problems. Break down large systems into smaller modules.", false, 
+                        [{uri: "https://example.com/study-tips", title: "Effective Study Habits for CS"}]);
+                    }, 1500);
+                    return;
+                }
+
+                const result = await callGemini();
+                removeLoader();
+                
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't process that request.";
+                
+                // Extract grounding sources
+                const attributions = result.candidates?.[0]?.groundingMetadata?.groundingAttributions;
+                let groundingData = [];
+                if (attributions) {
+                    groundingData = attributions
+                        .filter(a => a.web && a.web.uri)
+                        .map(a => ({ uri: a.web.uri, title: a.web.title }));
+                    
+                    // Deduplicate by URI
+                    groundingData = Array.from(new Map(groundingData.map(item => [item.uri, item])).values());
+                }
+
+                appendMessage(text, false, groundingData);
+
+            } catch (error) {
+                console.error("Gemini Error:", error);
+                removeLoader();
+                appendMessage("Sorry, I encountered an error connecting to my knowledge base. Please try again later.", false);
+            }
+        });
+
+        // --- Live Chat Logic (Firestore Rules strictly followed) ---
+        const roomTitles = {
+            'room_2': 'Peer Review (2 Max)',
+            'room_4': 'Study Group (4 Max)',
+            'room_8': 'Discussion Panel (8 Max)',
+            'room_20': 'Class Lecture (20 Max)'
+        };
+
+        const liveChatHistory = document.getElementById('live-chat-history');
+        const chatInput = document.getElementById('live-chat-input');
+        const chatSend = document.getElementById('live-chat-send');
+
+        window.joinRoom = (roomId) => {
+            // UI updates
+            document.getElementById('room-overlay').classList.add('hidden');
+            document.getElementById('current-room-title').textContent = roomTitles[roomId];
+            
+            document.querySelectorAll('.room-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-50', 'border-indigo-200');
+            });
+            event.currentTarget.classList.add('bg-indigo-50', 'border-indigo-200');
+
+            chatInput.disabled = false;
+            chatSend.disabled = false;
+
+            currentRoom = roomId;
+            liveChatHistory.innerHTML = '<div class="text-center text-slate-400 text-sm py-4">Loading messages...</div>';
+
+            // Connect to Firestore (Requires authentication rule 3 check)
+            if (!currentUser) {
+                alert("Please authenticate to use live chat.");
+                return;
+            }
+
+            // Unsubscribe from previous room
+            if (unsubscribeLiveChat) {
+                unsubscribeLiveChat();
+            }
+
+            // Firestore Path strict adherence (Rule 1)
+            // /artifacts/{appId}/public/data/{collectionName}
+            const collectionName = `chat_${roomId}`;
+            const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', collectionName);
+            
+            // Note: avoiding complex queries per Rule 2, just ordering by timestamp is basic and usually permitted
+            const q = query(messagesRef, orderBy('timestamp', 'asc'), limit(50));
+
+            unsubscribeLiveChat = onSnapshot(q, (snapshot) => {
+                if (liveChatHistory.innerHTML.includes('Loading messages')) {
+                    liveChatHistory.innerHTML = '';
+                }
+
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const data = change.doc.data();
+                        renderChatMessage(data);
+                    }
+                });
+                
+                if(snapshot.empty && liveChatHistory.innerHTML === '') {
+                    liveChatHistory.innerHTML = `<div class="text-center text-slate-400 text-sm py-4">Welcome to ${roomTitles[roomId]}. Be the first to say hi!</div>`;
+                }
+
+                liveChatHistory.scrollTop = liveChatHistory.scrollHeight;
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                liveChatHistory.innerHTML = `<div class="text-center text-red-500 text-sm py-4">Error connecting to live chat. Check console.</div>`;
+            });
+        };
+
+        const renderChatMessage = (data) => {
+            const isMe = data.uid === currentUser.uid;
+            const div = document.createElement('div');
+            div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4`;
+            
+            const timeString = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now';
+
+            div.innerHTML = `
+                <span class="text-[10px] text-slate-400 mb-1 mx-1">${isMe ? 'You' : data.name} • ${timeString}</span>
+                <div class="${isMe ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-200 text-slate-800'} px-4 py-2 rounded-2xl ${isMe ? 'rounded-tr-none' : 'rounded-tl-none'} shadow-sm text-sm max-w-[80%] inline-block break-words">
+                    ${data.text}
+                </div>
+            `;
+            liveChatHistory.appendChild(div);
+            
+            // Remove the empty message if it exists
+            const emptyMsg = liveChatHistory.querySelector('.text-center');
+            if (emptyMsg && emptyMsg.textContent.includes('Welcome')) emptyMsg.remove();
+        };
+
+        liveChatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentRoom || !currentUser) return;
+
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            chatInput.value = '';
+            
+            try {
+                const collectionName = `chat_${currentRoom}`;
+                const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', collectionName);
+                await addDoc(messagesRef, {
+                    text: text,
+                    uid: currentUser.uid,
+                    name: userData.name,
+                    timestamp: serverTimestamp()
+                });
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
+        });
+
+    </script>
 </body>
 </html>
